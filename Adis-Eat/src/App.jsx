@@ -7,6 +7,8 @@ import RequireAuth from "./auth/RequireAuth";
 import Layout from "./Layout";
 import Menu from "./menu/Menu";
 import DishDetail from "./menu/DishDetail";
+import CartPage from "./pages/CartPage";
+import Login from "./auth/Login";
 
 const Checkout = lazy(() => import("./checkout/Checkout"));
 
@@ -20,6 +22,8 @@ export default function App() {
               <Route index element={<h2>Welcome to Addis Eats</h2>} />
               <Route path="menu" element={<Menu />} />
               <Route path="menu/:id" element={<DishDetail />} />
+              <Route path="cart" element={<CartPage />} />
+              <Route path="login" element={<Login />} />
               <Route
                 path="checkout"
                 element={
@@ -30,7 +34,7 @@ export default function App() {
                   </RequireAuth>
                 }
               />
-              <Route path="*" element={<h2>404 Not Found</h2>} />
+              <Route path="*" element={<h2>404 Page Not Found</h2>} />
             </Route>
           </Routes>
         </BrowserRouter>
