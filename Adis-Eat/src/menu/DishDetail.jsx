@@ -1,11 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchDishes } from "../api/dishesApi";
+import { useCartStore } from "../cart/useCartStore";
 
 export default function DishDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [dish, setDish] = useState(null);
+
+  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     fetchDishes("All").then((data) => {
@@ -22,6 +25,7 @@ export default function DishDetail() {
       <h2>{dish.name} {dish.spicy && "🌶️"}</h2>
       <p>Category: {dish.category}</p>
       <p>Price: {dish.price} ETB</p>
+      <button onClick={() => addItem(dish)}>Add to Cart</button>
     </div>
   );
 }

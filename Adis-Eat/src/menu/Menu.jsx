@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { fetchDishes, categories } from "../api/dishesApi";
+import { useCartStore } from "../cart/useCartStore";
 
 export default function Menu() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -9,6 +10,9 @@ export default function Menu() {
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Connect to Zustand store
+  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -50,9 +54,10 @@ export default function Menu() {
         <div className="dish-grid">
           {dishes.map((dish) => (
             <div key={dish.id} className="dish-card">
-              <h3>{dish.name}</h3>
+              <h3>{dish.name} {dish.spicy && "🌶️"}</h3>
               <p>{dish.price} ETB</p>
-              <Link to={`/menu/${dish.id}`}>View Details</Link>
+              <Link to={`/menu/${dish.id}`}>View Details</Link>{" "}
+              <button onClick={() => addItem(dish)}>Add to Cart</button>
             </div>
           ))}
         </div>
