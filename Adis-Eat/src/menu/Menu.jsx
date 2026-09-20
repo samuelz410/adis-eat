@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import { fetchDishes } from "../api/dishesApi";
+import { useSearchParams, Link } from "react-router-dom";
+import { fetchDishes, categories } from "../api/dishesApi";
 
 export default function Menu() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeCategory = searchParams.get("category") || "All";
+
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -9,9 +13,8 @@ export default function Menu() {
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
-    setError(null);
 
-    fetchDishes("All", controller.signal)
+    fetchDishes(activeCategory, controller.signal)
       .then((data) => {
         setDishes(data);
         setLoading(false);
@@ -23,22 +26,37 @@ export default function Menu() {
       });
 
     return () => controller.abort();
-  }, []);
-
-  if (loading) return <div>⏳ Loading dishes...</div>;
-  if (error) return <div>⚠️ Error: {error}</div>;
+  }, [activeCategory]);
 
   return (
     <div>
       <h2>Menu</h2>
-      <div className="dish-grid">
-        {dishes.map((dish) => (
-          <div key={dish.id} className="dish-card">
-            <h3>{dish.name} {dish.spicy && "🌶️"}</h3>
-            <p>{dish.price} ETB</p>
-          </div>
+      <div className="category-bar">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            className={activeCategory === cat ? "active" : ""}
+            onClick={() => setSearchParams(cat === "All" ? {} : { category: cat })}
+          >
+            {cat}
+          </button>
         ))}
       </div>
+
+      {loading && <p>⏳ Loading...</p>}
+      {error && <p>⚠️ Error: {error}</p>}
+
+      {!loading && !error && (
+        <div className="dish-grid">
+          {dishes.map((dish) => (
+            <div key={dish.id} className="dish-card">
+              <h3>{dish.name}</h3>
+              <p>{dish.price} ETB</p>
+              <Link to={`/menu/${dish.id}`}>View Details</Link>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
